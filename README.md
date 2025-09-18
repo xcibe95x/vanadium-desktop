@@ -1,8 +1,8 @@
-# Vandium Desktop
+# Vanadium Desktop
 
 _A lightweight approach to removing Google web service dependency_
 
-This repository hosts **Vandium x ungoogled**, a desktop-focused fusion of GrapheneOS' Vanadium hardening patches with the ungoogled-chromium base. It is maintained by `xcibe95x` and targets users who want Vanadium's security posture without Google services on desktop platforms.
+This repository hosts **Vanadium x ungoogled**, a desktop-focused fusion of GrapheneOS' Vanadium hardening patches with the ungoogled-chromium base. It is maintained by `xcibe95x` and targets users who want Vanadium's security posture without Google services on desktop platforms.
 
 **Maintenance cadence:** Releases and refreshed patch drops are published roughly every few months once upstream Chromium and Vanadium changes stabilize. Expect staged, infrequent updates rather than a rapid release schedule.
 
@@ -12,9 +12,9 @@ This repository hosts **Vandium x ungoogled**, a desktop-focused fusion of Graph
 
 In descending order of significance (i.e. most important objective first):
 
-1. **ungoogled-chromium is Google Chromium, sans dependency on Google web services**.
-2. **ungoogled-chromium retains the default Chromium experience as closely as possible**. Unlike other Chromium forks that have their own visions of a web browser, ungoogled-chromium is essentially a drop-in replacement for Chromium.
-3. **ungoogled-chromium features tweaks to enhance privacy, control, and transparency**. However, almost all of these features must be manually activated or enabled. For more details, see [Feature Overview](#feature-overview).
+1. **Vanadium x ungoogled fuses GrapheneOS' Vanadium hardening with Chromium while stripping reliance on Google web services.**
+2. **The goal is to preserve the familiar Chromium desktop experience while shipping Vanadium's security posture and ungoogled's privacy defaults.**
+3. **We surface privacy, control, and transparency tweaks from both projects, leaving power users in charge of which hardened options to enable.** For more details, see [Feature Overview](#feature-overview).
 
 In scenarios where the objectives conflict, the objective of higher significance should take precedence.
 
@@ -36,20 +36,22 @@ In scenarios where the objectives conflict, the objective of higher significance
 
 ## Motivation and Philosophy
 
-Without signing in to a Google Account, Chromium does pretty well in terms of security and privacy. However, Chromium still has some dependency on Google web services and binaries. In addition, Google designed Chromium to be easy and intuitive for users, which means they compromise on transparency and control of internal operations.
+Chromium without a Google Account already fares decently for privacy, but it still leans on Google web services and intentionally hides internal knobs for a smoother UX. GrapheneOS created Vanadium to harden Chromium even further on Android, while ungoogled-chromium strips the Google backends for desktop users. Vanadium x ungoogled exists to bring those two efforts together on desktop platforms.
 
-ungoogled-chromium addresses these issues in the following ways:
+The ungoogled foundation removes Google's service dependency in the following ways:
 
 1. Remove all remaining background requests to any web services while building and running the browser
 2. Remove all code specific to Google web services
 3. Remove all uses of pre-made binaries from the source code, and replace them with user-provided alternatives when possible.
 4. Disable features that inhibit control and transparency, and add or modify features that promote them (these changes will almost always require manual activation or enabling).
 
+On top of that, we import Vanadium's security posture: tighter sandbox defaults, stricter network isolation, hardened HTTPS behaviour, and the curated privacy toggles GrapheneOS ships to their users.
+
 These features are implemented as configuration flags, patches, and custom scripts. For more details, consult the [Design Documentation](docs/design.md).
 
 ## Feature Overview
 
-_This section overviews the features of ungoogled-chromium. For more detailed information, it is best to consult the source code._
+_This section overviews the features borrowed from ungoogled-chromium and Vanadium. For more detailed information, consult the source code and patch set._
 
 Contents of this section:
 
@@ -60,16 +62,17 @@ Contents of this section:
 
 ### Key Features
 
-_These are the core features introduced by ungoogled-chromium._
+_These are the core features shipped by Vanadium x ungoogled, combining ungoogled and Vanadium hardening._
 
 - Disable functionality specific to Google domains (e.g. Google Host Detector, Google URL Tracker, Google Cloud Messaging, Google Hotwording, etc.)
   - This includes disabling [Safe Browsing](https://en.wikipedia.org/wiki/Google_Safe_Browsing). Consult [the FAQ for the rationale](https://ungoogled-software.github.io/ungoogled-chromium-wiki/faq#why-is-safe-browsing-disabled).
 - Block internal requests to Google at runtime. This feature is a fail-safe measure for the above, in case Google changes or introduces new components that our patches do not disable. This feature is implemented by replacing many Google web domains in the source code with non-existent alternatives ending in `qjz9zk` (known as domain substitution; [see docs/design.md](docs/design.md#source-file-processors) for details), then [modifying Chromium to block its own requests with such domains](patches/core/ungoogled-chromium/block-trk-and-subdomains.patch). In other words, no connections are attempted to the `qjz9zk` domain.
 - Strip binaries from the source code (known as binary pruning; [see docs/design.md](docs/design.md#source-file-processors) for details)
+- Apply Vanadium's hardened defaults such as HTTPS-only mode, strict site isolation, partitioned network state, and content filtering safeguards tuned for desktop users.
 
 ### Enhancing Features
 
-_These are the non-essential features introduced by ungoogled-chromium._
+_These enhancements round out the Vanadium x ungoogled experience beyond the core hardening._
 
 - Add many new command-line switches and `chrome://flags` entries to configure new features (which are disabled by default). See [docs/flags.md](docs/flags.md) for the exhaustive list.
 - Add _Suggestions URL_ text field in the search engine editor (`chrome://settings/searchEngines`) for customizing search engine suggestions.
@@ -83,11 +86,13 @@ _These are the non-essential features introduced by ungoogled-chromium._
 - (Iridium Browser feature change) Prevent URLs with the `trk:` scheme from connecting to the Internet
   - Also prevents any URLs with the top-level domain `qjz9zk` (as used in domain substitution) from attempting a connection.
 - (Windows-specific) Do not set the Zone Identifier on downloaded files
+- Sync a curated bundle of Vanadium privacy toggles (for example, network prediction disabled and tighter cookie policies) while leaving them visible for manual adjustment.
 
 ### Borrowed Features
 
-In addition to the features introduced by ungoogled-chromium, ungoogled-chromium selectively borrows many features from the following projects (in approximate order of significance):
+Beyond the native tweaks, Vanadium x ungoogled pulls battle-tested patches from sister projects (in approximate order of significance):
 
+- [Vanadium](https://github.com/GrapheneOS/Vanadium) - security posture and hardened defaults from GrapheneOS.
 - [Inox patchset](https://github.com/gcarq/inox-patchset)
 - [Bromite](https://github.com/bromite/bromite)
 - [Debian](https://tracker.debian.org/pkg/chromium)
@@ -185,24 +190,24 @@ List of mirrors:
    ```powershell
    set PATH=%cd%\chromium\uc_staging\depot_tools;%PATH%
    cd chromium
-   mkdir out\Vandium
-   copy ..\flags.gn out\Vandium\args.gn
-   gn gen out\Vandium --fail-on-unused-args
+   mkdir out\Vanadium
+   copy ..\flags.gn out\Vanadium\args.gn
+   gn gen out\Vanadium --fail-on-unused-args
    ```
 
 5. **Compile the browser**
 
    ```powershell
-   ninja -C out\Vandium chrome
+   ninja -C out\Vanadium chrome
    ```
 
 6. **Run your build**
 
    ```powershell
-   out\Vandium\chrome.exe --user-data-dir=%CD%\..\profile
+   out\Vanadium\chrome.exe --user-data-dir=%CD%\..\profile
    ```
 
-These steps prioritise a working baseline. Adjust GN args, additional targets, and packaging to suit your release goals before publishing the next Vandium x ungoogled drop.
+These steps prioritise a working baseline. Adjust GN args, additional targets, and packaging to suit your release goals before publishing the next Vanadium x ungoogled drop.
 
 ## Design Documentation
 
