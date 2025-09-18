@@ -10,7 +10,7 @@ Adapted from GrapheneOS Vanadium patch 0035-disable-safe-browsing-reporting-opt-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/components/safe_browsing/core/common/safe_browsing_prefs.cc b/components/safe_browsing/core/common/safe_browsing_prefs.cc
-index cbda8e4a12003..7ff4f4734706c 100644
+index cbda8e4a120033b36280f3fae18c75a5f94278bf..7ff4f4734706cdcf24a42cde6271fc3c55bd105b 100644
 --- a/components/safe_browsing/core/common/safe_browsing_prefs.cc
 +++ b/components/safe_browsing/core/common/safe_browsing_prefs.cc
 @@ -215,7 +215,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {

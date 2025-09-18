@@ -11,7 +11,7 @@ Adapted from GrapheneOS Vanadium patch 0034-disable-browser-sign-in-feature-by-d
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/chrome/browser/signin/account_consistency_mode_manager.cc b/chrome/browser/signin/account_consistency_mode_manager.cc
-index 52a6425d14309..e12a7e812a86b 100644
+index 52a6425d1430975b78b720ad3b6e7edad962f7fb..e12a7e812a86b571f953e1a6c7b249d900925dbf 100644
 --- a/chrome/browser/signin/account_consistency_mode_manager.cc
 +++ b/chrome/browser/signin/account_consistency_mode_manager.cc
 @@ -121,7 +121,7 @@ AccountConsistencyModeManager::~AccountConsistencyModeManager() = default;
@@ -24,7 +24,7 @@ index 52a6425d14309..e12a7e812a86b 100644
  
  // static
 diff --git a/components/signin/internal/identity_manager/primary_account_manager.cc b/components/signin/internal/identity_manager/primary_account_manager.cc
-index c14327e3d8a35..d8a6c3213b5b8 100644
+index c14327e3d8a359f80f0758340ba3e028ddea27c8..d8a6c3213b5b8085293e0a438dbcff9df3725864 100644
 --- a/components/signin/internal/identity_manager/primary_account_manager.cc
 +++ b/components/signin/internal/identity_manager/primary_account_manager.cc
 @@ -331,7 +331,7 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
