@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: fgei <fgei@gmail.com>
+Date: Tue, 19 Sep 2023 13:31:07 +0000
+Subject: [PATCH] temporary: Workaround for crashes at StackTrace calls
+
+Adapted from GrapheneOS Vanadium patch 0005-temporary-Workaround-for-crashes-at-StackTrace-calls.patch for the Vandium browser port.
+
+---
+ tools/cfi/ignores.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/tools/cfi/ignores.txt b/tools/cfi/ignores.txt
+index 2b8497ad92e22..e5c0b27612e5d 100644
+--- a/tools/cfi/ignores.txt
++++ b/tools/cfi/ignores.txt
+@@ -301,3 +301,7 @@ src:*third_party/pthreadpool/src/src/portable-api.c
+ ######### Uncategorized
+ 
+ src:*native_client/*
++
++######### Downstream addition
++[cfi-unrelated-cast]
++fun:__unw_init_local

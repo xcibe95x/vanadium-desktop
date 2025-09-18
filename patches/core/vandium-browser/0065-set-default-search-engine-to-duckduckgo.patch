@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Zoraver Kang <zkang@wpi.edu>
+Date: Sat, 17 Aug 2019 15:53:50 -0400
+Subject: [PATCH] set default search engine to DuckDuckGo
+
+Adapted from GrapheneOS Vanadium patch 0065-set-default-search-engine-to-DuckDuckGo.patch for the Vandium browser port.
+
+---
+ components/search_engines/template_url_prepopulate_data.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/components/search_engines/template_url_prepopulate_data.cc b/components/search_engines/template_url_prepopulate_data.cc
+index 25c5ada5548ee..a6534809e3f40 100644
+--- a/components/search_engines/template_url_prepopulate_data.cc
++++ b/components/search_engines/template_url_prepopulate_data.cc
+@@ -236,7 +236,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
+     std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+         regional_prepopulated_engines) {
+   return FindPrepopulatedEngineInternal(prefs, regional_prepopulated_engines,
+-                                        google.id,
++                                        duckduckgo.id,
+                                         /*use_first_as_fallback=*/true);
+ }
+ 

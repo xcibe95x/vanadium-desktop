@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: fgei <fgei@gmail.com>
+Date: Mon, 13 Mar 2023 10:29:53 +0000
+Subject: [PATCH] Utility class for adding shared preference keys
+
+Adapted from GrapheneOS Vanadium patch 0089-Utility-class-for-adding-shared-preference-keys.patch for the Vandium browser port.
+
+---
+ base/BUILD.gn                                 |   3 +
+ .../shared_preferences/SharedPrefsUtils.java  | 136 ++++++++++++++++++
+ .../StrictPreferenceKeyChecker.java           |   4 +
+ 3 files changed, 143 insertions(+)
+ create mode 100644 base/android/java/src/org/chromium/base/shared_preferences/SharedPrefsUtils.java
+
+diff --git a/base/BUILD.gn b/base/BUILD.gn
+index 2f5d46db2e187..695316a0d5066 100644
+--- a/base/BUILD.gn
++++ b/base/BUILD.gn
+@@ -5316,6 +5316,9 @@ if (is_android) {
+       "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java",
+       "android/java/src/org/chromium/base/shared_preferences/StrictPreferenceKeyChecker.java",
+     ]
++    sources += [
++      "android/java/src/org/chromium/base/shared_preferences/SharedPrefsUtils.java",
++    ]
+   }
+ 
+   android_library("flagged_apis_java") {

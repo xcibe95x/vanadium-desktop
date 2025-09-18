@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: fgei <fgei@gmail.com>
+Date: Thu, 9 Nov 2023 14:12:16 +0000
+Subject: [PATCH] Disable WebGPU in Android by default
+
+Adapted from GrapheneOS Vanadium patch 0047-Disable-WebGPU-in-Android-by-default.patch for the Vandium browser port.
+
+---
+ gpu/config/gpu_finch_features.cc | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/gpu/config/gpu_finch_features.cc b/gpu/config/gpu_finch_features.cc
+index c1ed7ef37a199..548b0bd91783e 100644
+--- a/gpu/config/gpu_finch_features.cc
++++ b/gpu/config/gpu_finch_features.cc
+@@ -233,8 +233,7 @@ BASE_FEATURE(kEnableDrDc,
+ 
+ // Enable WebGPU on gpu service side only. This is used with origin trial and
+ // enabled by default on supported platforms.
+-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+-    BUILDFLAG(IS_ANDROID)
++#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+ #define WEBGPU_ENABLED base::FEATURE_ENABLED_BY_DEFAULT
+ #else
+ #define WEBGPU_ENABLED base::FEATURE_DISABLED_BY_DEFAULT

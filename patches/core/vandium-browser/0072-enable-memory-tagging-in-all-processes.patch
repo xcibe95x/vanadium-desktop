@@ -1,0 +1,53 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Muhomor <muhomor.dmitry@gmail.com>
+Date: Wed, 22 Nov 2023 15:10:08 +0200
+Subject: [PATCH] enable memory tagging in all processes
+
+Adapted from GrapheneOS Vanadium patch 0072-enable-memory-tagging-in-all-processes.patch for the Vandium browser port.
+
+---
+ .../nonembedded/java/AndroidManifest.xml            |  1 +
+ base/allocator/partition_alloc_features.cc          | 13 -------------
+ 2 files changed, 1 insertion(+), 13 deletions(-)
+
+diff --git a/base/allocator/partition_alloc_features.cc b/base/allocator/partition_alloc_features.cc
+index c09a910f8f919..6974bb709b7df 100644
+--- a/base/allocator/partition_alloc_features.cc
++++ b/base/allocator/partition_alloc_features.cc
+@@ -212,11 +212,7 @@ constinit const FeatureParam<bool> kBackupRefPtrSuppressCorruptionDetectedCrash{
+ 
+ BASE_FEATURE(kPartitionAllocMemoryTagging,
+              "PartitionAllocMemoryTagging",
+-#if PA_BUILDFLAG(USE_FULL_MTE) || BUILDFLAG(IS_ANDROID)
+              FEATURE_ENABLED_BY_DEFAULT
+-#else
+-             FEATURE_DISABLED_BY_DEFAULT
+-#endif
+ );
+ 
+ constexpr FeatureParam<MemtagMode>::Option kMemtagModeOptions[] = {
+@@ -253,11 +249,7 @@ constexpr FeatureParam<MemoryTaggingEnabledProcesses>::Option
+ constinit const FeatureParam<MemoryTaggingEnabledProcesses>
+     kMemoryTaggingEnabledProcessesParam{
+         &kPartitionAllocMemoryTagging, kPAFeatureEnabledProcessesStr,
+-#if PA_BUILDFLAG(USE_FULL_MTE)
+         MemoryTaggingEnabledProcesses::kAllProcesses,
+-#else
+-        MemoryTaggingEnabledProcesses::kNonRenderer,
+-#endif
+         &kMemoryTaggingEnabledProcessesOptions};
+ 
+ BASE_FEATURE(kKillPartitionAllocMemoryTagging,
+@@ -267,12 +259,7 @@ BASE_FEATURE(kKillPartitionAllocMemoryTagging,
+ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPermissiveMte);
+ BASE_FEATURE(kPartitionAllocPermissiveMte,
+              "PartitionAllocPermissiveMte",
+-#if PA_BUILDFLAG(USE_FULL_MTE)
+-             // We want to actually crash if USE_FULL_MTE is enabled.
+              FEATURE_DISABLED_BY_DEFAULT
+-#else
+-             FEATURE_ENABLED_BY_DEFAULT
+-#endif
+ );
+ 
+ BASE_FEATURE(kAsanBrpDereferenceCheck,

@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Micay <danielmicay@gmail.com>
+Date: Thu, 22 Dec 2016 07:15:34 -0500
+Subject: [PATCH] enable -fwrapv in Clang for non-UBSan builds
+
+Adapted from GrapheneOS Vanadium patch 0009-enable-fwrapv-in-Clang-for-non-UBSan-builds.patch for the Vandium browser port.
+
+---
+ build/config/compiler/BUILD.gn | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
+index 59fa6f9c57e11..09cc65d305e69 100644
+--- a/build/config/compiler/BUILD.gn
++++ b/build/config/compiler/BUILD.gn
+@@ -456,6 +456,10 @@ config("compiler") {
+       }
+     }
+ 
++    if (is_clang && !is_ubsan && !is_ubsan_security) {
++      cflags += [ "-fwrapv" ]
++    }
++
+     # Linker warnings.
+     if (fatal_linker_warnings && !is_apple && current_os != "aix" &&
+         current_os != "zos") {

@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: fgei <fgei@gmail.com>
+Date: Wed, 12 Jun 2024 16:15:42 +0000
+Subject: [PATCH] Match skipping compatibility check default value checks in
+ java as well
+
+Adapted from GrapheneOS Vanadium patch 0162-Match-skipping-compatibility-check-default-value-che.patch for the Vandium browser port.
+
+---
+ .../autofill/options/AutofillOptionsMediator.java   | 13 +++++++++++++
+ .../browser/ui/autofill/autofill_client_provider.cc |  6 +++++-
+ 2 files changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/chrome/browser/ui/autofill/autofill_client_provider.cc b/chrome/browser/ui/autofill/autofill_client_provider.cc
+index 5e6e3a2b14c3f..49830e32d9771 100644
+--- a/chrome/browser/ui/autofill/autofill_client_provider.cc
++++ b/chrome/browser/ui/autofill/autofill_client_provider.cc
+@@ -125,7 +125,11 @@ bool UsesVirtualViewStructureForAutofill(PrefService& prefs) {
+ 
+ AutofillClientProvider::AutofillClientProvider(PrefService* prefs)
+     : uses_platform_autofill_(
+-          UsesVirtualViewStructureForAutofill(CHECK_DEREF(prefs))) {
++          UsesVirtualViewStructureForAutofill(CHECK_DEREF(prefs))
++#if BUILDFLAG(IS_ANDROID)
++        && prefs->GetBoolean(prefs::kAutofillUsingVirtualViewStructure)
++#endif // BUILDFLAG(IS_ANDROID)
++    ) {
+ #if BUILDFLAG(IS_ANDROID)
+   DelayRegisteringFieldTrialForA11yDeprecation();
+   RecordWhetherAndroidPrefResets(*prefs, uses_platform_autofill_);

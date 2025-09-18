@@ -8,6 +8,10 @@ __pycache__/
 # Ignore macOS Finder meta
 .DS_Store
 .tm_properties
+.cache
 
 # Ignore optional build / cache directory
 /build
+/tmp
+/tmp-vanadium
+/.cache

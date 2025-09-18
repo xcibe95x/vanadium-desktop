@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: fgei <fgei@gmail.com>
+Date: Mon, 15 Jul 2024 15:29:50 +0000
+Subject: [PATCH] Include a java port of atomic file and scoped file descriptor
+ utility classes from Apps app
+
+Adapted from GrapheneOS Vanadium patch 0124-Include-a-java-port-of-atomic-file-and-scoped-file-d.patch for the Vandium browser port.
+
+---
+ vandium/ext/utils/BUILD.gn                   | 14 +++
+ .../app/vandium/ext/utils/AtomicFile2.java   | 96 +++++++++++++++++++
+ .../ext/utils/ScopedFileDescriptor.java       | 42 ++++++++
+ 3 files changed, 152 insertions(+)
+ create mode 100644 vandium/ext/utils/BUILD.gn
+ create mode 100644 vandium/ext/utils/java/src/app/vandium/ext/utils/AtomicFile2.java
+ create mode 100644 vandium/ext/utils/java/src/app/vandium/ext/utils/ScopedFileDescriptor.java
+
+diff --git a/vandium/ext/utils/BUILD.gn b/vandium/ext/utils/BUILD.gn
+new file mode 100644
+index 0000000000000..bc05f3660d5b3
+--- /dev/null
++++ b/vandium/ext/utils/BUILD.gn
+@@ -0,0 +1,14 @@
++# Copyright 2023 GrapheneOS
++# Use of this source code is governed by a GPL-2.0 style license that can be
++# found in the LICENSE file.
++
++import("//build/config/android/rules.gni")
++
++android_library("file_utils_java") {
++  sources = [
++    "java/src/app/vandium/ext/utils/AtomicFile2.java",
++    "java/src/app/vandium/ext/utils/ScopedFileDescriptor.java",
++  ]
++  deps = [
++  ]
++}
+\ No newline at end of file

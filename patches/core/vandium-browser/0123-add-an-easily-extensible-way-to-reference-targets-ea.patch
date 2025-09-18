@@ -1,0 +1,45 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: fgei <fgei@gmail.com>
+Date: Sun, 24 Dec 2023 03:51:24 +0000
+Subject: [PATCH] Add an easily extensible way to reference targets easily in
+ ninja
+
+Adapted from GrapheneOS Vanadium patch 0123-Add-an-easily-extensible-way-to-reference-targets-ea.patch for the Vandium browser port.
+
+---
+ BUILD.gn          |  4 ++++
+ vandium/BUILD.gn | 10 ++++++++++
+ 2 files changed, 14 insertions(+)
+ create mode 100644 vandium/BUILD.gn
+
+diff --git a/BUILD.gn b/BUILD.gn
+index 44f0e3f0d4ed6..5a5f21d595e6f 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -439,6 +439,10 @@ group("gn_all") {
+       if (enable_chrome_android_internal) {
+         deps += [ "//clank" ]
+       }
++
++      deps += [
++        "//vandium:vandium_build_targets",
++      ]
+     }
+ 
+     if (is_linux || is_chromeos || is_android) {
+diff --git a/vandium/BUILD.gn b/vandium/BUILD.gn
+new file mode 100644
+index 0000000000000..34418da31ed32
+--- /dev/null
++++ b/vandium/BUILD.gn
+@@ -0,0 +1,10 @@
++# Copyright 2023 The Chromium Authors
++# Use of this source code is governed by a BSD-style license that can be
++# found in the LICENSE file.
++
++assert(is_android)
++# An group included in //BUILD.gn to make vandium build target files reachable by GN.
++group("vandium_build_targets") {
++  deps = [
++  ]
++}

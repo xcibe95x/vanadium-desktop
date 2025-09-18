@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: fgei <fgei@gmail.com>
+Date: Wed, 24 Jan 2024 11:22:54 +0000
+Subject: [PATCH] Checkout PGO profiles
+
+Adapted from GrapheneOS Vanadium patch 0012-Checkout-PGO-profiles.patch for the Vandium browser port.
+
+---
+ DEPS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/DEPS b/DEPS
+index ca12d8165862b..e22dc3cc186d4 100644
+--- a/DEPS
++++ b/DEPS
+@@ -160,7 +160,7 @@ vars = {
+   'checkout_clang_coverage_tools': False,
+ 
+   # Fetch the pgo profiles to optimize official builds.
+-  'checkout_pgo_profiles': False,
++  'checkout_pgo_profiles': True,
+ 
+   # Fetch clang-tidy into the same bin/ directory as our clang binary.
+   'checkout_clang_tidy': False,

@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: fgei <fgei@gmail.com>
+Date: Fri, 5 Jan 2024 20:28:01 +0000
+Subject: [PATCH] Use the old naming convention of "Ads" in ads site settings
+
+Adapted from GrapheneOS Vanadium patch 0156-Use-the-old-naming-convention-of-Ads-in-ads-site-set.patch for the Vandium browser port.
+
+The upstream's word choice on blocking ads does not apply in Vandium.
+All sites are blocked with ads unless added as exception on a website
+settings.
+---
+ .../site_settings/ContentSettingsResources.java      | 12 ++++++------
+ .../site_settings/SingleWebsiteSettings.java         |  6 ++----
+ .../browser_ui/site_settings/SiteSettings.java       |  2 --
+ .../browser_ui/strings/android/site_settings.grdp    |  3 +++
+ components/page_info/page_info_ui.cc                 |  4 ++--
+ components/site_settings_strings.grdp                |  6 ++++++
+ 6 files changed, 19 insertions(+), 14 deletions(-)
+
+diff --git a/components/page_info/page_info_ui.cc b/components/page_info/page_info_ui.cc
+index ad2633992abcb..90c351001f431 100644
+--- a/components/page_info/page_info_ui.cc
++++ b/components/page_info/page_info_ui.cc
+@@ -164,8 +164,8 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
+        IDS_SITE_SETTINGS_TYPE_PROTECTED_MEDIA_ID,
+        IDS_SITE_SETTINGS_TYPE_PROTECTED_MEDIA_ID_MID_SENTENCE},
+ #endif
+-      {ContentSettingsType::ADS, IDS_SITE_SETTINGS_TYPE_ADS,
+-       IDS_SITE_SETTINGS_TYPE_ADS_MID_SENTENCE},
++      {ContentSettingsType::ADS, IDS_SITE_SETTINGS_TYPE_ADS_2,
++       IDS_SITE_SETTINGS_TYPE_ADS_MID_SENTENCE_2},
+       {ContentSettingsType::SOUND, IDS_SITE_SETTINGS_TYPE_SOUND,
+        IDS_SITE_SETTINGS_TYPE_SOUND_MID_SENTENCE},
+       {ContentSettingsType::CLIPBOARD_READ_WRITE,
+diff --git a/components/site_settings_strings.grdp b/components/site_settings_strings.grdp
+index 26941202af2c0..eddd31c31819e 100644
+--- a/components/site_settings_strings.grdp
++++ b/components/site_settings_strings.grdp
+@@ -7,6 +7,12 @@
+   <message name="IDS_SITE_SETTINGS_TYPE_ADS_MID_SENTENCE" desc="This string is the name of the intrusive ads setting (visit chrome://settings/content and click 'Additional content settings') when used mid-sentence.">
+     intrusive ads
+   </message>
++  <message name="IDS_SITE_SETTINGS_TYPE_ADS_2" desc="This string is the name of the intrusive ads setting (visit chrome://settings/content and click 'Additional content settings').">
++    Ads
++  </message>
++  <message name="IDS_SITE_SETTINGS_TYPE_ADS_MID_SENTENCE_2" desc="This string is the name of the intrusive ads setting (visit chrome://settings/content and click 'Additional content settings') when used mid-sentence.">
++    ads
++  </message>
+   <message name="IDS_SITE_SETTINGS_TYPE_ANTI_ABUSE" desc="The label used for the anti-abuse site settings controls.">
+     Auto-verify
+   </message>

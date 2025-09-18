@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: fgei <fgei@gmail.com>
+Date: Mon, 29 Apr 2024 17:58:46 +0000
+Subject: [PATCH] add support for german-specific language content filtering
+ when German language is set
+
+Adapted from GrapheneOS Vanadium patch 0168-add-support-for-german-specific-language-content-fil.patch for the Vandium browser port.
+
+---
+ DEPS                                                   | 10 ++++++++++
+ vandium/android_config/BUILD.gn                       |  1 +
+ vandium/android_config/filter_lists/BUILD.gn          |  8 ++++++++
+ .../app/vandium/config/host/ConfigGenerator.java      |  7 +++++++
+ 4 files changed, 26 insertions(+)
+
+diff --git a/DEPS b/DEPS
+index 167a947318db4..08e14ff7a2cde 100644
+--- a/DEPS
++++ b/DEPS
+@@ -4809,6 +4809,16 @@ hooks = [
+               'https://easylist.to/easylist/easylist.txt',
+               'https://easylist.to/easylist/easyprivacy.txt']
+   },
++  {
++    'name': 'fetch_filter_lists_germany',
++    'condition': 'checkout_android',
++    'action': ['python3',
++              'src/vandium/android_config/filter_lists/filter_list_download.py',
++              '--output',
++              'src/vandium/android_config/filter_lists/filter_lists_easylist_germany.txt',
++              '--urls',
++              'https://easylist.to/easylistgermany/easylistgermany.txt']
++  },
+ 
+ ]
+ 
