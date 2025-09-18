@@ -1,9 +1,11 @@
 # Python files
 __pycache__/
 *.py[cod]
+python3.cmd
 
 # Python testing files
 .coverage
+.gcs_entries
 
 # Ignore macOS Finder meta
 .DS_Store

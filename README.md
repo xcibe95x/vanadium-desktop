@@ -1,8 +1,10 @@
-# Vanadium Desktop
+﻿# Vanadium Desktop
 
 _A lightweight approach to removing Google web service dependency_
 
 This repository hosts **Vanadium x ungoogled**, a desktop-focused fusion of GrapheneOS' Vanadium hardening patches with the ungoogled-chromium base. It is maintained by `xcibe95x` and targets users who want Vanadium's security posture without Google services on desktop platforms.
+
+**Windows quick start:** Install Python from python.org (run the classic installer, tick "Add Python to PATH" and "Install for all users"), then open a Developer Command Prompt and run `python utils\win_build.py`. The helper installs prerequisites, creates a `python3` shim if needed, and drives clone/patch/build automatically.
 
 **Maintenance cadence:** Releases and refreshed patch drops are published roughly every few months once upstream Chromium and Vanadium changes stabilize. Expect staged, infrequent updates rather than a rapid release schedule.
 
@@ -163,6 +165,14 @@ List of mirrors:
 
 ### Quick Windows Build (xcibe95x)
 
+Run everything in one shot:
+
+```powershell
+python utils\win_build.py
+```
+
+Or walk through the manual equivalents:
+
 1. **Install prerequisites**
 
    - Visual Studio 2022 (Community or higher) with the _Desktop development with C++_ workload and the latest MSVC toolset.
@@ -239,3 +249,6 @@ List of known projects that fork or use changes from ungoogled-chromium:
 ## License
 
 BSD-3-clause. See [LICENSE](LICENSE)
+
+
+
