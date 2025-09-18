@@ -24,9 +24,24 @@ REQUIRED_PY_MODULES = (
 
 
 def run_cmd(cmd, cwd=None, env=None):
-    print(f"[win-build] Executing: {' '.join(cmd)}")
+    print('[win-build] Executing:', ' '.join(cmd))
     run(cmd, check=True, cwd=cwd, env=env)
 
+def find_patch_binary() -> Path | None:
+    candidate = shutil.which('patch')
+    if candidate:
+        return Path(candidate)
+    for env_var in ('ProgramFiles', 'ProgramFiles(x86)'):
+        base = os.environ.get(env_var)
+        if not base:
+            continue
+        git_patch = Path(base) / 'Git' / 'usr' / 'bin' / 'patch.exe'
+        if git_patch.exists():
+            return git_patch
+    repo_patch = Path(__file__).resolve().parent / 'third_party' / 'patch' / 'patch.exe'
+    if repo_patch.exists():
+        return repo_patch
+    return None
 
 def ensure_visual_studio():
     if os.name != 'nt':
@@ -162,6 +177,10 @@ def main():
     ensure_python3_alias(repo_root)
     ensure_python_modules()
 
+    patch_bin = find_patch_binary()
+    if not patch_bin:
+        print("[win-build] Warning: Could not locate a GNU patch binary. Install Git for Windows or provide PATCH_BIN.")
+
     # Step 1: Clone Chromium sources (unless skipped)
     if not args.skip_clone:
         run_cmd([sys.executable, str(utils_dir / 'clone.py'), '-o', str(args.output), '-p', args.pgo])
@@ -173,8 +192,11 @@ def main():
              str(args.output), str(repo_root / 'pruning.list')])
 
     # Step 3: Apply patches
+    patch_env = os.environ.copy() if patch_bin else os.environ.copy()
+    if patch_bin:
+        patch_env['PATCH_BIN'] = str(patch_bin)
     run_cmd([sys.executable, str(utils_dir / 'patches.py'), 'apply',
-             str(args.output), str(repo_root / 'patches')])
+             str(args.output), str(repo_root / 'patches')], env=patch_env)
 
     # Step 4: Domain substitution cache
     build_dir = repo_root / 'build'
