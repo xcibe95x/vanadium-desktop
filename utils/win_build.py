@@ -3,6 +3,8 @@
 """End-to-end helper to clone, patch, and build Vandium x ungoogled on Windows."""
 
 import argparse
+import hashlib
+import json
 import os
 import shutil
 import sys
@@ -23,9 +25,89 @@ REQUIRED_PY_MODULES = (
 )
 
 
+STATE_VERSION = 1
+STATEFUL_STEPS = ("clone", "prune_binaries", "patches", "domain_substitution")
+STEP_TO_INDEX = {name: index for index, name in enumerate(STATEFUL_STEPS)}
+
+
 def run_cmd(cmd, cwd=None, env=None):
     print('[win-build] Executing:', ' '.join(cmd))
     run(cmd, check=True, cwd=cwd, env=env)
+
+
+def _safe_filename_stem(path: Path) -> str:
+    stem = path.name or "checkout"
+    return ''.join(char if char.isalnum() else '_' for char in stem)
+
+
+def _state_path(state_dir: Path, output: Path) -> Path:
+    resolved = output.resolve(strict=False)
+    digest = hashlib.sha256(str(resolved).encode('utf-8')).hexdigest()[:12]
+    return state_dir / f'{_safe_filename_stem(resolved)}_{digest}.json'
+
+
+class BuildState:
+    def __init__(self, path: Path, metadata: dict[str, str]):
+        self.path = path
+        self.metadata = metadata
+        self.state: dict[str, object] = {
+            'version': STATE_VERSION,
+            'metadata': metadata,
+            'completed_steps': []
+        }
+        self._load()
+
+    def _load(self) -> None:
+        try:
+            raw = self.path.read_text(encoding='utf-8')
+        except FileNotFoundError:
+            return
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            print(f'[win-build] Warning: ignoring corrupt state file {self.path}: {exc}')
+            self._remove_file()
+            return
+        if data.get('version') != STATE_VERSION or data.get('metadata') != self.metadata:
+            self._remove_file()
+            return
+        completed = data.get('completed_steps')
+        if isinstance(completed, list):
+            self.state['completed_steps'] = [step for step in completed if step in STEP_TO_INDEX]
+        else:
+            self._remove_file()
+
+    def _remove_file(self) -> None:
+        try:
+            self.path.unlink()
+        except FileNotFoundError:
+            pass
+
+    def _write(self) -> None:
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            self.path.write_text(json.dumps(self.state, indent=2), encoding='utf-8')
+        except OSError as exc:
+            print(f'[win-build] Warning: failed to write build state to {self.path}: {exc}')
+
+    def has_completed(self, step: str) -> bool:
+        return step in self.state['completed_steps']
+
+    def invalidate_from(self, step: str) -> None:
+        step_index = STEP_TO_INDEX[step]
+        completed = [
+            existing for existing in self.state['completed_steps']
+            if STEP_TO_INDEX.get(existing, -1) < step_index
+        ]
+        if len(completed) != len(self.state['completed_steps']):
+            self.state['completed_steps'] = completed
+            self._write()
+
+    def mark_complete(self, step: str) -> None:
+        self.invalidate_from(step)
+        if step not in self.state['completed_steps']:
+            self.state['completed_steps'].append(step)
+            self._write()
 
 def find_patch_binary() -> Path | None:
     candidate = shutil.which('patch')
@@ -171,6 +253,21 @@ def main():
 
     repo_root = Path(__file__).resolve().parent.parent
     utils_dir = repo_root / 'utils'
+    build_dir = repo_root / 'build'
+    build_dir.mkdir(exist_ok=True)
+
+    chromium_version = (repo_root / 'chromium_version.txt').read_text(encoding='utf-8').strip()
+    patch_revision = (repo_root / 'revision.txt').read_text(encoding='utf-8').strip()
+    print(f'[win-build] Target Chromium: {chromium_version} (Vanadium revision {patch_revision})')
+
+    state_dir = build_dir / 'win_build_state'
+    state_dir.mkdir(parents=True, exist_ok=True)
+    state_path = _state_path(state_dir, args.output)
+    state = BuildState(state_path, {
+        'chromium_version': chromium_version,
+        'patch_revision': patch_revision,
+        'pgo_profile': args.pgo,
+    })
 
     ensure_visual_studio()
     ensure_pip()
@@ -181,33 +278,57 @@ def main():
     if not patch_bin:
         print("[win-build] Warning: Could not locate a GNU patch binary. Install Git for Windows or provide PATCH_BIN.")
 
+    checkout_git = args.output / '.git'
+
     # Step 1: Clone Chromium sources (unless skipped)
-    if not args.skip_clone:
-        run_cmd([sys.executable, str(utils_dir / 'clone.py'), '-o', str(args.output), '-p', args.pgo])
-    else:
+    if args.skip_clone:
         print('[win-build] Skipping clone step per user request.')
+    elif not state.has_completed('clone') or not checkout_git.exists():
+        state.invalidate_from('clone')
+        run_cmd([sys.executable, str(utils_dir / 'clone.py'), '-o', str(args.output), '-p', args.pgo])
+        if not checkout_git.exists():
+            raise SystemExit(f'Chromium checkout missing at {args.output} after clone step.')
+        state.mark_complete('clone')
+    else:
+        print('[win-build] Chromium checkout already prepared for this release; skipping clone.')
+
+    if not checkout_git.exists():
+        raise SystemExit(f'Chromium checkout not found at {args.output}. Run without --skip-clone to initialize it.')
 
     # Step 2: Prune binaries
-    run_cmd([sys.executable, str(utils_dir / 'prune_binaries.py'),
-             str(args.output), str(repo_root / 'pruning.list')])
+    if state.has_completed('prune_binaries'):
+        print('[win-build] Skipping binary pruning; already pruned for this release.')
+    else:
+        state.invalidate_from('prune_binaries')
+        run_cmd([sys.executable, str(utils_dir / 'prune_binaries.py'),
+                 str(args.output), str(repo_root / 'pruning.list')])
+        state.mark_complete('prune_binaries')
 
     # Step 3: Apply patches
-    patch_env = os.environ.copy() if patch_bin else os.environ.copy()
-    if patch_bin:
-        patch_env['PATCH_BIN'] = str(patch_bin)
-    run_cmd([sys.executable, str(utils_dir / 'patches.py'), 'apply',
-             str(args.output), str(repo_root / 'patches')], env=patch_env)
+    if state.has_completed('patches'):
+        print('[win-build] Skipping patch application; already applied for this release.')
+    else:
+        state.invalidate_from('patches')
+        patch_env = os.environ.copy()
+        if patch_bin:
+            patch_env['PATCH_BIN'] = str(patch_bin)
+        run_cmd([sys.executable, str(utils_dir / 'patches.py'), 'apply',
+                 str(args.output), str(repo_root / 'patches')], env=patch_env)
+        state.mark_complete('patches')
 
     # Step 4: Domain substitution cache
-    build_dir = repo_root / 'build'
-    build_dir.mkdir(exist_ok=True)
     domsub_cache = build_dir / 'domsubcache.tar.gz'
-    if domsub_cache.exists():
-        domsub_cache.unlink()
-    run_cmd([sys.executable, str(utils_dir / 'domain_substitution.py'), 'apply',
-             '-r', str(repo_root / 'domain_regex.list'),
-             '-f', str(repo_root / 'domain_substitution.list'),
-             '-c', str(domsub_cache), str(args.output)])
+    if state.has_completed('domain_substitution'):
+        print('[win-build] Skipping domain substitution cache; already generated for this release.')
+    else:
+        state.invalidate_from('domain_substitution')
+        if domsub_cache.exists():
+            domsub_cache.unlink()
+        run_cmd([sys.executable, str(utils_dir / 'domain_substitution.py'), 'apply',
+                 '-r', str(repo_root / 'domain_regex.list'),
+                 '-f', str(repo_root / 'domain_substitution.list'),
+                 '-c', str(domsub_cache), str(args.output)])
+        state.mark_complete('domain_substitution')
 
     if args.skip_build:
         print('[win-build] Build step skipped. Chromium tree prepared with patches applied.')
