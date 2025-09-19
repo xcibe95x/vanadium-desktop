@@ -67,7 +67,6 @@ core/vandium-browser/0046-disable-newer-privacy-sandbox-features-by-default.patc
 core/vandium-browser/0047-disable-webgpu-in-android-by-default.patch
 core/vandium-browser/0049-always-use-local-new-tab-page.patch
 core/vandium-browser/0050-mark-non-secure-origins-as-dangerous.patch
-core/vandium-browser/0051-most-private-webrtc-ip-handling-policy-by-default.patch
 core/vandium-browser/0052-stub-out-the-battery-status-api.patch
 core/vandium-browser/0055-disable-trials-of-privacy-aware-analytics-advertisin.patch
 core/vandium-browser/0057-disable-appending-variations-header.patch
@@ -76,7 +75,6 @@ core/vandium-browser/0059-disable-fetching-optimization-guides-by-default.patch
 core/vandium-browser/0060-disable-tab-group-sync-settings-ui-by-default.patch
 core/vandium-browser/0061-disable-fetching-optimization-hints-by-default.patch
 core/vandium-browser/0062-disable-more-optimization-guides-features-by-default.patch
-core/vandium-browser/0063-disable-network-time-tracker-by-default.patch
 core/vandium-browser/0064-disable-opening-pdf-in-the-app-by-default.patch
 core/vandium-browser/0065-set-default-search-engine-to-duckduckgo.patch
 core/vandium-browser/0067-make-https-only-mode-the-default.patch
@@ -128,7 +126,6 @@ core/vandium-browser/0190-reset-saved-javascript-optimizer-site-setting.patch
 core/vandium-browser/0195-fix-versioncode-for-64-bit-only-builds.patch
 core/vandium-browser/0201-disable-password-leak-detection-by-default.patch
 core/vandium-browser/0202-further-disable-password-leak-detection-checks.patch
-core/vandium-browser/0204-enable-certificate-transparency-feature-by-default-f.patch
 core/vandium-browser/0205-enable-local-network-access-checks-by-default.patch
 core/vandium-browser/0207-bugfix-avoid-crashes-on-web-reporting-api-calls.patch
 core/vandium-browser/0210-restore-chrome-browser-password_entry_edit-for-local.patch
