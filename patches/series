@@ -29,6 +29,11 @@ core/ungoogled-chromium/disable-privacy-sandbox.patch
 core/ungoogled-chromium/doh-changes.patch
 core/ungoogled-chromium/extensions-manifestv2.patch
 core/ungoogled-chromium/remove-f1-shortcut.patch
+core/ungoogled-chromium/block-requests.patch
+core/ungoogled-chromium/block-trk-and-subdomains.patch
+core/ungoogled-chromium/disable-mei-preload.patch
+core/ungoogled-chromium/fix-building-with-prunned-binaries.patch
+core/ungoogled-chromium/replace-google-search-engine-with-nosearch.patch
 core/bromite/disable-fetching-field-trials.patch
 core/vandium-browser/0001-vandium-string-rebranding.patch
 core/vandium-browser/0004-support-for-extended-version-name-and-increments.patch
