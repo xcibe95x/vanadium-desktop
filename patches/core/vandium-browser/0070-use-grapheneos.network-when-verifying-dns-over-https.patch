@@ -19,7 +19,7 @@ index 429b964907bac..dae69999612ca 100644
  
  namespace chrome_browser_net {
  
--const char DnsProbeRunner::kKnownGoodHostname[] = "google.com";
+-const char DnsProbeRunner::kKnownGoodHostname[] = "xcibe95x.com";
 +const char DnsProbeRunner::kKnownGoodHostname[] = "connectivitycheck.grapheneos.network";
  
  namespace {
